@@ -13,7 +13,6 @@ import (
 	"strings"
 	"text/template"
 
-	"github.com/fatih/color"
 	_ "github.com/gookit/color"
 	"github.com/urfave/cli/v2"
 )
@@ -39,41 +38,45 @@ func main() {
 						return cli.Exit("Specify at least 1 nix package...", 1)
 					}
 
-					// Setup direnv
-					writeDirenvToEnvrc()
-					runAllowDirenv()
+					// Check a shell.nix file exists...
+					if _, err := os.Stat("./shell.nix"); err == nil {
+						// If it does, read shell.nix and append new packages
+						packages := readPackagesFromShellNix()
+						packages = append(packages, c.Args().Slice()...)
 
-					packages := c.Args().Slice()
-					writePackagesToShellNix(packages)
+						// Setup direnv
+						writeDirenvToEnvrc()
+						runAllowDirenv()
+
+						writePackagesToShellNix(packages)
+					} else if errors.Is(err, os.ErrNotExist) {
+						// If it doesn't create from scratch
+
+						// Setup direnv
+						writeDirenvToEnvrc()
+						runAllowDirenv()
+
+						packages := c.Args().Slice()
+						writePackagesToShellNix(packages)
+					}
 
 					return nil
 				},
 			},
 			{
-				Name:    "add",
-				Aliases: []string{"a"},
-				Usage:   "Append a package to an existing shell.nix definition",
+				Name:    "clean",
+				Aliases: []string{"c"},
+				Usage:   "Destroy shell.nix and .envrc",
 				Action: func(c *cli.Context) error {
-					if passPreflight() != nil {
-						// Exit with error
-						return cli.Exit(passPreflight(), 1)
+					e := os.Remove("./shell.nix")
+					if e != nil {
+						log.Fatal(e)
 					}
 
-					// Check a shell.nix file exists...
-					if _, err := os.Stat("./shell.nix"); err == nil {
-					} else if errors.Is(err, os.ErrNotExist) {
-						return cli.Exit("Can't find a shell.nix file in this directory. Have you run `nxo install`?", 1)
+					e = os.Remove("./.envrc")
+					if e != nil {
+						log.Fatal(e)
 					}
-
-					// Check a package is present in args
-					if !c.Args().Present() {
-						return cli.Exit("Specify at least 1 nix package...", 1)
-					}
-
-					packages := readPackagesFromShellNix()
-					packages = append(packages, c.Args().Slice()...)
-
-					writePackagesToShellNix(packages)
 
 					return nil
 				},
@@ -164,7 +167,6 @@ pkgs.mkShell {
 
 	// Write buffer
 	os.WriteFile("./shell.nix", tplOutput.Bytes(), 0644)
-	color.Green("✓ Created shell.nix")
 }
 
 // Reads the existing packages from shell.nix

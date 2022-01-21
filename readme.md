@@ -9,10 +9,16 @@ Setup a project with ruby and go dependencies:
 $ nxo install ruby go
 ```
 
-Append a package to an existing `shell.nix` file:
+To add other nix packages, you can use `nxo install` again:
 
 ```
-$ nxo add sqlite
+$ nxo install sqlite
+```
+
+To wipe nix config setup by `nxo`:
+
+```
+$ nxo clean
 ```
 
 ### Installation
