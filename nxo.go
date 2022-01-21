@@ -161,6 +161,8 @@ pkgs.mkShell {
 	color.Green("✓ Created shell.nix")
 }
 
+// Reads the existing packages from shell.nix
+// Returns: []string
 func readPackagesFromShellNix() []string {
 	shellNixContents, err := ioutil.ReadFile("./shell.nix")
 	if err != nil {
