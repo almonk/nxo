@@ -60,7 +60,7 @@ func main() {
 					}
 
 					// Check a shell.nix file exists...
-					if _, err := os.Stat("/path/to/whatever"); err == nil {
+					if _, err := os.Stat("./shell.nix"); err == nil {
 					} else if errors.Is(err, os.ErrNotExist) {
 						return cli.Exit("Can't find a shell.nix file in this directory. Have you run `nxo install`?", 1)
 					}
