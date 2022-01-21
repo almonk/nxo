@@ -59,6 +59,12 @@ func main() {
 						return cli.Exit(passPreflight(), 1)
 					}
 
+					// Check a shell.nix file exists...
+					if _, err := os.Stat("/path/to/whatever"); err == nil {
+					} else if errors.Is(err, os.ErrNotExist) {
+						return cli.Exit("Can't find a shell.nix file in this directory. Have you run `nxo install`?", 1)
+					}
+
 					// Check a package is present in args
 					if !c.Args().Present() {
 						return cli.Exit("Specify at least 1 nix package...", 1)
