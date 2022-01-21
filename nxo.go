@@ -178,6 +178,11 @@ func readPackagesFromShellNix() []string {
 	re := regexp.MustCompile(`(?s)buildInputs = \[\n(.*?)\]`)
 	match := re.FindStringSubmatch(string(shellNixContents))
 
+	if len(match) == 0 {
+		// We can't find any packages in this file
+		cli.Exit("Can't parse shell.nix. Have you manually edited it?", 1)
+	}
+
 	packages := strings.Split(match[1], "\n")
 	packages = packages[:len(packages)-1] // Remove empty last element
 
