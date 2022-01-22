@@ -9,16 +9,37 @@ Setup a project with ruby and go dependencies:
 $ nxo install ruby go
 ```
 
-To add other nix packages, you can use `nxo install` again:
+Let's add sqlite to this project as well. Simply run `nxo install` again:
 
 ```
-$ nxo install sqlite
+$ nxo i sqlite # `nxo i` is a shortcut for install
 ```
 
-To wipe nix config setup by `nxo`:
+`nxo` will generate the `shell.nix` below;
+
+```nix
+{ pkgs ? import <nixpkgs> {}
+}:
+
+pkgs.mkShell {
+  buildInputs = [
+    pkgs.ruby
+    pkgs.go
+    pkgs.sqlite
+  ];
+}
+```
+
+To wipe nix config:
 
 ```
 $ nxo clean
+```
+
+or 
+
+```
+$ nxo c
 ```
 
 ### Installation
