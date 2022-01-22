@@ -21,7 +21,7 @@ func main() {
 	app := &cli.App{
 		Name:      "nxo",
 		Usage:     "Bootstrap nix environments in seconds",
-		UsageText: "nxo [command] [nix package]",
+		UsageText: "nxo [command] [nix packages...]",
 		Commands: []*cli.Command{
 			{
 				Name:    "init",
@@ -68,14 +68,15 @@ func main() {
 				Aliases: []string{"c"},
 				Usage:   "Destroy shell.nix and .envrc",
 				Action: func(c *cli.Context) error {
-					e := os.Remove("./shell.nix")
-					if e != nil {
-						log.Fatal(e)
-					}
+					// Declare managed files
+					managedFiles := []string{"./shell.nix", "./.envrc"}
 
-					e = os.Remove("./.envrc")
-					if e != nil {
-						log.Fatal(e)
+					// For each managed file, attempt to remove...
+					for _, file := range managedFiles {
+						e := os.Remove(file)
+						if e != nil {
+							log.Fatal(e)
+						}
 					}
 
 					return nil
@@ -154,13 +155,14 @@ pkgs.mkShell {
 		Packages: packages,
 	}
 
-	t, err := template.New("webpage").Parse(tpl)
+	t, err := template.New("shell").Parse(tpl)
 	if err != nil {
 		println(err.Error())
 	}
 
 	var tplOutput bytes.Buffer
 
+	// Execute the template
 	if err := t.Execute(&tplOutput, data); err != nil {
 		println(err.Error())
 	}
