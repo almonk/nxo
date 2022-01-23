@@ -18,6 +18,7 @@ import (
 )
 
 func main() {
+
 	app := &cli.App{
 		Name:      "nxo",
 		Usage:     "Bootstrap nix environments in seconds",
@@ -121,6 +122,14 @@ func main() {
 				Aliases:   []string{"r"},
 				Usage:     "Replace a nix package in shell.nix with another",
 				UsageText: "nxo replace [original package] [target package]",
+				Flags: []cli.Flag{
+					&cli.BoolFlag{
+						Name:    "invert",
+						Aliases: []string{"i"},
+						Value:   false,
+						Usage:   "Inverts the replace order of packages: [target package] ← [original package]",
+					},
+				},
 				Action: func(c *cli.Context) error {
 					// Check preflight...
 					if passPreflight() != nil {
@@ -128,16 +137,16 @@ func main() {
 						return cli.Exit(passPreflight(), 1)
 					}
 
-					// Guard against too many arguments
-					if c.Args().Len() > 2 || c.Args().Len() < 1 {
-						return cli.Exit("This command only accepts two arguments. [original package] [new package]", 1)
-					}
-
 					// Package to be replaced
 					originalPackage := c.Args().First()
 
 					// Package to replace with...
-					newPackage := c.Args().Get(c.Args().Len() - 1)
+					newPackage := c.Args().Get(1)
+
+					// If invert is used, then swap the packages
+					if c.Bool("invert") {
+						originalPackage, newPackage = newPackage, originalPackage
+					}
 
 					// Read existing packages in
 					packages := readPackagesFromShellNix()
@@ -198,7 +207,7 @@ func main() {
 			},
 		},
 	}
-
+	app.UseShortOptionHandling = true
 	sort.Sort(cli.FlagsByName(app.Flags))
 	sort.Sort(cli.CommandsByName(app.Commands))
 
