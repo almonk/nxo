@@ -1,4 +1,4 @@
-module main
+module github.com/almonk/nxo
 
 go 1.16
 
