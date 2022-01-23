@@ -45,7 +45,7 @@ $ nxo c
 ### Installation
 
 ```bash
-curl -L https://github.com/almonk/nxo/releases/download/v0.0.4/nxo_darwin_arm64 --output /tmp/nxo && chmod +x /tmp/nxo && sudo ln -s /tmp/nxo /usr/local/bin
+curl -L https://github.com/almonk/nxo/releases/download/v0.0.4/nxo_darwin_arm64 --output /tmp/nxo && chmod +x /tmp/nxo && sudo mv /tmp/nxo /usr/local/bin
 ```
 
 ### Uninstallation
