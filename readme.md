@@ -1,6 +1,8 @@
 # nxo
 Bootstrap nix environments in seconds.
 
+![](./header.png)
+
 ### Usage
 
 Setup a project with ruby and go dependencies:
