@@ -1,5 +1,6 @@
 # nxo
-Bootstrap nix environments in seconds.
+
+`nxo` is a command line utility to bootstrap simple configuration for [nix](http://nixos.org). `nxo` provides syntactic sugar and sane defaults to get you up and running with nix as quickly as possible.
 
 ![](./header.png)
 
