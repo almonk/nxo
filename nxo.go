@@ -82,6 +82,26 @@ func main() {
 					return nil
 				},
 			},
+			{
+				Name:    "search",
+				Aliases: []string{"s"},
+				Usage:   "Search the nix package registry",
+				Action: func(c *cli.Context) error {
+					// Declare managed files
+					query := c.Args().First()
+					url := fmt.Sprintf("https://search.nixos.org/packages?channel=21.11&from=0&size=50&sort=relevance&type=packages&query=%s", query)
+
+					// Open the URL in the web browser
+					cmd := exec.Command("open", url)
+					_, err := cmd.Output()
+
+					if err != nil {
+						fmt.Println(err.Error())
+					}
+
+					return nil
+				},
+			},
 		},
 	}
 
