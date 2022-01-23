@@ -24,9 +24,9 @@ func main() {
 		UsageText: "nxo [command] [nix packages...]",
 		Commands: []*cli.Command{
 			{
-				Name:    "init",
+				Name:    "install",
 				Aliases: []string{"i"},
-				Usage:   "Initialise a new nix environment",
+				Usage:   "Install nix packages for the working directory",
 				Action: func(c *cli.Context) error {
 					if passPreflight() != nil {
 						// Exit with error
