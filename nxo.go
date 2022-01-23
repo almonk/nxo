@@ -24,9 +24,10 @@ func main() {
 		UsageText: "nxo [command] [nix packages...]",
 		Commands: []*cli.Command{
 			{
-				Name:    "install",
-				Aliases: []string{"i"},
-				Usage:   "Install nix packages for the working directory",
+				Name:      "install",
+				Aliases:   []string{"i"},
+				Usage:     "Install nix packages for the working directory",
+				UsageText: "nxo install [package]",
 				Action: func(c *cli.Context) error {
 					if passPreflight() != nil {
 						// Exit with error
@@ -70,9 +71,10 @@ func main() {
 				},
 			},
 			{
-				Name:    "clean",
-				Aliases: []string{"c"},
-				Usage:   "Destroy shell.nix and .envrc",
+				Name:      "clean",
+				Aliases:   []string{"c"},
+				Usage:     "Destroy shell.nix and .envrc",
+				UsageText: "nxo clean",
 				Action: func(c *cli.Context) error {
 					// Declare managed files
 					managedFiles := []string{"./shell.nix", "./.envrc"}
@@ -89,9 +91,10 @@ func main() {
 				},
 			},
 			{
-				Name:    "search",
-				Aliases: []string{"s"},
-				Usage:   "Search the nix package registry",
+				Name:      "search",
+				Aliases:   []string{"s"},
+				Usage:     "Search the nix package registry",
+				UsageText: "nxo search [package]",
 				Action: func(c *cli.Context) error {
 					// Check a package is present in args
 					if !c.Args().Present() {
@@ -114,9 +117,10 @@ func main() {
 				},
 			},
 			{
-				Name:    "replace",
-				Aliases: []string{"r"},
-				Usage:   "Replace a nix package in shell.nix with another",
+				Name:      "replace",
+				Aliases:   []string{"r"},
+				Usage:     "Replace a nix package in shell.nix with another",
+				UsageText: "nxo replace [original package] [target package]",
 				Action: func(c *cli.Context) error {
 					// Check preflight...
 					if passPreflight() != nil {
@@ -161,9 +165,10 @@ func main() {
 				},
 			},
 			{
-				Name:    "remove",
-				Aliases: []string{"rm"},
-				Usage:   "Remove a package from shell.nix",
+				Name:      "remove",
+				Aliases:   []string{"rm"},
+				Usage:     "Remove a package from shell.nix",
+				UsageText: "nxo remove [package]",
 				Action: func(c *cli.Context) error {
 					// Check preflight...
 					if passPreflight() != nil {
