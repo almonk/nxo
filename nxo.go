@@ -13,7 +13,7 @@ import (
 	"strings"
 	"text/template"
 
-	_ "github.com/gookit/color"
+	"github.com/fatih/color"
 	"github.com/urfave/cli/v2"
 )
 
@@ -60,6 +60,12 @@ func main() {
 						writePackagesToShellNix(packages)
 					}
 
+					color.Green("✓ Installed %d packages:", c.Args().Len())
+
+					for _, arg := range c.Args().Slice() {
+						color.Green("    - %s", arg)
+					}
+
 					return nil
 				},
 			},
@@ -87,6 +93,11 @@ func main() {
 				Aliases: []string{"s"},
 				Usage:   "Search the nix package registry",
 				Action: func(c *cli.Context) error {
+					// Check a package is present in args
+					if !c.Args().Present() {
+						return cli.Exit("Specify at least 1 nix package...", 1)
+					}
+
 					// Declare managed files
 					query := c.Args().First()
 					url := fmt.Sprintf("https://search.nixos.org/packages?channel=21.11&from=0&size=50&sort=relevance&type=packages&query=%s", query)
@@ -105,7 +116,7 @@ func main() {
 			{
 				Name:    "replace",
 				Aliases: []string{"r"},
-				Usage:   "Replace a nix package in `shell.nix` with another",
+				Usage:   "Replace a nix package in shell.nix with another",
 				Action: func(c *cli.Context) error {
 					// Check preflight...
 					if passPreflight() != nil {
@@ -114,7 +125,7 @@ func main() {
 					}
 
 					// Guard against too many arguments
-					if c.Args().Len() > 2 {
+					if c.Args().Len() > 2 || c.Args().Len() < 1 {
 						return cli.Exit("This command only accepts two arguments. [original package] [new package]", 1)
 					}
 
@@ -139,6 +150,39 @@ func main() {
 					// We looped through the whole shell.nix but didn't find any packages to replace...
 					if !anyMatches {
 						return cli.Exit(fmt.Sprintf("`%s` not found in shell.nix", originalPackage), 1)
+					}
+
+					// Write new shell.nix
+					writePackagesToShellNix(packages)
+
+					color.Green(fmt.Sprintf("✓ Replaced %s → %s", originalPackage, newPackage))
+
+					return nil
+				},
+			},
+			{
+				Name:    "remove",
+				Aliases: []string{"rm"},
+				Usage:   "Remove a package from shell.nix",
+				Action: func(c *cli.Context) error {
+					// Check preflight...
+					if passPreflight() != nil {
+						// Exit with error
+						return cli.Exit(passPreflight(), 1)
+					}
+
+					// Check a package is present in args
+					if !c.Args().Present() {
+						return cli.Exit("Specify at least 1 nix package...", 1)
+					}
+
+					// Read existing packages in
+					packages := readPackagesFromShellNix()
+
+					// Remove each package from arguments
+					for _, item := range c.Args().Slice() {
+						packages = removeItemFromPackages(packages, item)
+						color.Green(fmt.Sprintf("✓ Removing %s", item))
 					}
 
 					// Write new shell.nix
@@ -189,6 +233,19 @@ func doesDependencyExist(name string) bool {
 func writeDirenvToEnvrc() {
 	var file = "use nix"
 	os.WriteFile("./.envrc", []byte(file), 0644)
+}
+
+// Remove an element from a packages array
+func removeItemFromPackages(packages []string, item string) []string {
+	newitems := []string{}
+
+	for _, i := range packages {
+		if i != item {
+			newitems = append(newitems, i)
+		}
+	}
+
+	return newitems
 }
 
 // Runs the `direnv allow` command
