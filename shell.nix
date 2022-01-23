@@ -2,7 +2,7 @@
 }:
 
 pkgs.mkShell {
-  buildInputs = [
-    pkgs.go
-  ];
+	buildInputs = [
+		pkgs.go
+	];
 }

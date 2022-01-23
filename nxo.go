@@ -102,12 +102,56 @@ func main() {
 					return nil
 				},
 			},
+			{
+				Name:    "replace",
+				Aliases: []string{"r"},
+				Usage:   "Replace a nix package in `shell.nix` with another",
+				Action: func(c *cli.Context) error {
+					// Check preflight...
+					if passPreflight() != nil {
+						// Exit with error
+						return cli.Exit(passPreflight(), 1)
+					}
+
+					// Guard against too many arguments
+					if c.Args().Len() > 2 {
+						return cli.Exit("This command only accepts two arguments. [original package] [new package]", 1)
+					}
+
+					// Package to be replaced
+					originalPackage := c.Args().First()
+
+					// Package to replace with...
+					newPackage := c.Args().Get(c.Args().Len() - 1)
+
+					// Read existing packages in
+					packages := readPackagesFromShellNix()
+
+					anyMatches := false
+
+					for i := range packages {
+						if packages[i] == originalPackage {
+							packages[i] = newPackage
+							anyMatches = true
+						}
+					}
+
+					// We looped through the whole shell.nix but didn't find any packages to replace...
+					if !anyMatches {
+						return cli.Exit(fmt.Sprintf("`%s` not found in shell.nix", originalPackage), 1)
+					}
+
+					// Write new shell.nix
+					writePackagesToShellNix(packages)
+
+					return nil
+				},
+			},
 		},
 	}
 
 	sort.Sort(cli.FlagsByName(app.Flags))
 	sort.Sort(cli.CommandsByName(app.Commands))
-	app.EnableBashCompletion = true
 
 	err := app.Run(os.Args)
 	if err != nil {
