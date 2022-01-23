@@ -155,7 +155,7 @@ func main() {
 					// Write new shell.nix
 					writePackagesToShellNix(packages)
 
-					color.Green(fmt.Sprintf("✓ Replaced %s → %s", originalPackage, newPackage))
+					color.Green(fmt.Sprintf("✓ Replacing %s → %s", originalPackage, newPackage))
 
 					return nil
 				},
