@@ -8,6 +8,10 @@
 
 ### Installation
 
+Before installing `nxo` you'll need;
+* [`nix`](https://nixos.org/download.html#nix-install-macos) 
+* [`direnv`](https://direnv.net/docs/installation.html)
+
 The easiest way to install is to download the binary:
 
 ```bash
